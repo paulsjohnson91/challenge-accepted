@@ -8,9 +8,9 @@ import (
 
 	"log"
 
-	route "./routes"
-	lib "./shared"
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	route "github.com/paulsjohnson91/challenge-accepted/routes"
+	lib "github.com/paulsjohnson91/challenge-accepted/shared"
 )
 
 func init() {
