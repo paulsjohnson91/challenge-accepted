@@ -8,7 +8,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 
-	mid "../models"
+	mid "github.com/paulsjohnson91/challenge-accepted/models"
 )
 
 // TokenAuthentication middleware for vaidation token

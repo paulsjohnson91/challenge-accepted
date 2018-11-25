@@ -5,9 +5,9 @@ import (
 	"github.com/pressly/chi/middleware"
 	"github.com/rs/cors"
 
-	controller "../controllers"
-	db "../dbs"
-	mid "../middlewares"
+	controller "github.com/paulsjohnson91/challenge-accepted/controllers"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	mid "github.com/paulsjohnson91/challenge-accepted/middlewares"
 )
 
 //Protected Routes

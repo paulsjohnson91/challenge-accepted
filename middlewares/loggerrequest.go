@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	db "../dbs"
-	model "../models"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
 )
 
 var logger *logrus.Logger

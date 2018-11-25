@@ -8,8 +8,8 @@ import (
 
 	"github.com/pressly/chi"
 
-	model "../models"
-	service "../services"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	service "github.com/paulsjohnson91/challenge-accepted/services"
 )
 
 // UserValidOnProject middleware for validate permission of user

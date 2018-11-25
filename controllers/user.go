@@ -11,9 +11,9 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	db "../dbs"
-	model "../models"
-	lib "../shared"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	lib "github.com/paulsjohnson91/challenge-accepted/shared"
 )
 
 //GetUser get a user by Id

@@ -10,8 +10,8 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	db "../dbs"
-	model "../models/challenges"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models/challenges"
 )
 
 //GetChallenge get a challenge by Id

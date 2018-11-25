@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	model "../models"
-	service "../services"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	service "github.com/paulsjohnson91/challenge-accepted/services"
 )
 
 func UserIsAdmin(next http.Handler) http.Handler {

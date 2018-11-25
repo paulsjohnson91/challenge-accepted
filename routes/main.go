@@ -6,7 +6,7 @@ import (
 	"github.com/pressly/chi"
 	"github.com/rs/cors"
 
-	db "../dbs"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 )
 
 //Router main rules of routes

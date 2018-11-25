@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	model "../models"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
 	mgo "gopkg.in/mgo.v2"
 )
 

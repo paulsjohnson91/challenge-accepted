@@ -7,9 +7,9 @@ import (
 
 	"fmt"
 
-	db "../dbs"
-	model "../models"
-	lib "../shared"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	lib "github.com/paulsjohnson91/challenge-accepted/shared"
 )
 
 var session = db.StartMongoDB("Middleware / User Service").Session

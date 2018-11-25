@@ -10,8 +10,8 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	db "../dbs"
-	model "../models"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
 )
 
 //GetPermission get a Permission by Id

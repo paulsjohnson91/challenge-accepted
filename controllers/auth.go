@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	db "../dbs"
-	model "../models"
-	service "../services"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	service "github.com/paulsjohnson91/challenge-accepted/services"
 )
 
 //Home a home API

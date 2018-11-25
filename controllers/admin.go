@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	model "../models"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
 )
 
 //Admin GET teste

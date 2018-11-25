@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	model "../models"
-	service "../services"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	service "github.com/paulsjohnson91/challenge-accepted/services"
 )
 
 //Flags for biwise

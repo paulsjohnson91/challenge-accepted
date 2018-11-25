@@ -8,9 +8,9 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 
-	db "../dbs"
-	model "../models"
-	lib "../shared"
+	db "github.com/paulsjohnson91/challenge-accepted/dbs"
+	model "github.com/paulsjohnson91/challenge-accepted/models"
+	lib "github.com/paulsjohnson91/challenge-accepted/shared"
 )
 
 //GenerateToken for a valid user
