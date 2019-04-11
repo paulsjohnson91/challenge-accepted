@@ -26,8 +26,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println("here")
-	log.Println("Starting")
 	sessions := db.StartDispatch()
 	// addr := os.Getenv("API_URL")
 	addr := ":3333"

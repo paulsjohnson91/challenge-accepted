@@ -31,7 +31,7 @@ const AuthPassword = "admpass1"
 
 //StartMongoDB initialize session on mongodb
 func StartMongoDB(msg string) *MgoSession {
-
+	log.Println("Attempting to connect to " + os.Getenv("MONGODB_URL"))
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs: []string{os.Getenv("MONGODB_URL")},
 		//Addrs:    []string{SERVER},
