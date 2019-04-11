@@ -16,14 +16,14 @@ mongo:
     - APPLICATION_PASS=admpass1
 
 challengeaccepted:
-  image: challengeaccepted:latest
+  image: challengeaccepted
   container_name: challenge-accepted-api
-  restart: always
+  # restart: always
   ports:
     - 3333:3333
   links:
     - mongo
   environment:
-    - MONGODB_URL=localhost:27017
+    - MONGODB_URL=mongo:27017
     - DB_USER=adminuser
     - DB_PASS=admpass1
