@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"log"
+	"os"
 	"net/http"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-const SERVER = "ds055885.mlab.com:55885"
+// const SERVER = "ds055885.mlab.com:55885"
 
 // DBNAME the name of the DB instance
 const DBNAME = "gorest"
@@ -29,7 +30,7 @@ func MongoMiddleware(next http.Handler) http.Handler {
 		log.Printf("MongoDB on request!")
 
 		mongoDBDialInfo := &mgo.DialInfo{
-			Addrs:    []string{SERVER},
+			Addrs: []string{os.Getenv("MONGODB_URL")},
 			Timeout:  60 * time.Second,
 			Database: DBNAME,
 			Username: AuthUserName,

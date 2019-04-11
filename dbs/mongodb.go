@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"log"
+	"os"
 	"time"
 
 	mgo "gopkg.in/mgo.v2"
@@ -16,7 +17,7 @@ func newMgoSession(s *mgo.Session) *MgoSession {
 	return &MgoSession{s}
 }
 
-const SERVER = "ds055885.mlab.com:55885"
+//const SERVER = "ds055885.mlab.com:55885"
 
 // DBNAME the name of the DB instance
 const DBNAME = "gorest"
@@ -32,8 +33,8 @@ const AuthPassword = "admpass1"
 func StartMongoDB(msg string) *MgoSession {
 
 	mongoDBDialInfo := &mgo.DialInfo{
-		// Addrs:   []string{os.Getenv("MONGODB_URL")},
-		Addrs:    []string{SERVER},
+		Addrs: []string{os.Getenv("MONGODB_URL")},
+		//Addrs:    []string{SERVER},
 		Timeout:  60 * time.Second,
 		Database: DBNAME,
 		Username: AuthUserName,
