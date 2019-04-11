@@ -73,7 +73,6 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 		ss := s.MongoDB.Copy()
 		defer ss.Close()
 
-		// Stub an user to be populated from the body
 		u := model.User{}
 		json.NewDecoder(r.Body).Decode(&u)
 
@@ -85,6 +84,65 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 		if passwd, err := lib.Encrypt(u.Password); err == nil {
 			u.Password = passwd
 		}
+		u.Admin = false
+		names, err := ss.DB("gorest").CollectionNames()
+		if err != nil {
+			// Handle error
+			log.Printf("Failed to get coll names: %v", err)
+			return
+		}
+
+		// Simply search in the names slice, e.g.
+		isUsers := false
+		for _, name := range names {
+			if name == "users" {
+				count, err := ss.DB("gorest").C("users").Count()
+				if err != nil {
+					// Handle error
+					log.Printf("Count on users table failed", err)
+					return
+				}
+
+				// log.Printf("There are " + strconv.Itoa(count) + " users")
+				if count == 0 {
+					isUsers = true
+				}
+				break
+			}
+		}
+		if isUsers == true {
+			log.Printf("There are no users, adding user as admin")
+			u.Admin = true
+		}
+
+		ss.DB("gorest").C("users").Insert(u)
+		uj, _ := json.Marshal(u)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, "%s", uj)
+	}
+}
+
+//CreateAdmin create a new user
+func CreateAdminUser(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		u := model.User{}
+		json.NewDecoder(r.Body).Decode(&u)
+
+		// Add an Id
+		u.ID = bson.NewObjectId()
+		u.CreatedAt = time.Now()
+		u.UpdatedAt = time.Now()
+
+		if passwd, err := lib.Encrypt(u.Password); err == nil {
+			u.Password = passwd
+		}
+		u.Admin = true
 
 		ss.DB("gorest").C("users").Insert(u)
 		uj, _ := json.Marshal(u)

@@ -11,6 +11,7 @@ WORKDIR /go/src/github.com/paulsjohnson91/challenge-accepted
 # (You may fetch or manage dependencies here,
 # either manually or with a tool like "godep".)
 RUN go get github.com/paulsjohnson91/challenge-accepted
+ADD challenge-accepted /go/src/github.com/paulsjohnson91/challenge-accepted
 RUN go build .
 
 # Run the command by default when the container starts.

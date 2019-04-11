@@ -14,7 +14,8 @@ import (
 //Home a home API
 func Home() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Public routes!"))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("Home page"))
 	}
 }
 

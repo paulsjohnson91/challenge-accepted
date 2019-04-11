@@ -20,19 +20,12 @@ func UserIsAdmin(next http.Handler) http.Handler {
 			return
 		}
 
-		// Check in future
-		// mgos, ok := r.Context().Value(model.DbKey).(*mgo.Database)
-		// if !ok {
-		// 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		// 	w.WriteHeader(500)
-		// 	fmt.Fprintf(w, `{"message":"Error on decode Session MongoDB"}`)
-		// 	return
-		// }
-
-		log.Printf("[UserHavePermission] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
+		log.Printf("[UserIsAdmin] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
 
 		if service.UserAdminStatus(claims.UserID) {
 			next.ServeHTTP(w, r)
+		} else {
+			log.Printf("[UserIsAdmin] Unauthorized access to method=%s EndPoint=%s by user=%s", r.Method, r.URL.RequestURI(), claims.UserID)
 		}
 
 		w.WriteHeader(http.StatusUnauthorized)

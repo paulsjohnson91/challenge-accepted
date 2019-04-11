@@ -4,9 +4,9 @@ mongo:
     restart: always
     ports:
     - 27017:27017
-    volumes:
-    - /var/data/challenge-mongo-data:/data/db
-    - /var/data/challenge-mongo-bkp:/data/bkp
+    # volumes:
+    # - /var/data/challenge-mongo-data:/data/db
+    # - /var/data/challenge-mongo-bkp:/data/bkp
     environment:
     - AUTH=yes
     - ADMIN_USER=admin
@@ -20,7 +20,7 @@ challengeaccepted:
   container_name: challenge-accepted-api
   # restart: always
   ports:
-    - 3333:3333
+    - 3334:3333
   links:
     - mongo
   environment:

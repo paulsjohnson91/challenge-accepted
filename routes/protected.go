@@ -30,9 +30,12 @@ func Protected(s *db.Dispatch, cors *cors.Cors) func(r chi.Router) {
 		//CRUD User
 		r.Get("/user/{id}", controller.GetUser(s))
 		r.Put("/user/{id}", controller.UpdateUser(s))
-		r.Delete("/user/{id}", controller.GetUser(s))
+		r.Delete("/user/{id}", controller.DeleteUser(s))
 
 		r.Get("/users", controller.GetUsers(s))
+
+		//CRUD Admin User
+		r.Post("/admin", controller.CreateAdminUser(s))
 
 		//CRUD Permission
 		// r.Post("/permission", controller.CreatePermission(s))
