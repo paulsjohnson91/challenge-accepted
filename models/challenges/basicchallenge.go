@@ -7,8 +7,9 @@ import (
 )
 
 type ChallengeItem struct {
-	Index int    `json:"index" bson:"index"`
-	Item  string `json:"item", bson:"item"`
+	ID    bson.ObjectId   `json:"id" bson:"_id"`
+	Index int    		  `json:"index" bson:"index"`
+	Item  string 		  `json:"item", bson:"item"`
 }
 
 //Project model

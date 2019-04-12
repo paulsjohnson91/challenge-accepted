@@ -7,9 +7,9 @@ import (
 )
 
 type ItemProgress struct {
-	Index       int       `json:"index" bson:"index"`
-	Complete    bool      `json:"complete", bson:"complete"`
-	CompletedAt time.Time `json:"completed_at,omitempty" bson:"completed_at"`
+	ChallengeItemID  bson.ObjectId   `json:"id" bson:"_id"`
+	Complete         bool     		 `json:"complete", bson:"complete"`
+	CompletedAt      time.Time 		`json:"completed_at,omitempty" bson:"completed_at"`
 }
 
 //Project model

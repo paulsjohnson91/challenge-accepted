@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
+    "log"
 	"github.com/pressly/chi"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -44,8 +44,36 @@ func GetSubscription(s *db.Dispatch) http.HandlerFunc {
 	}
 }
 
-//GetChallenge get a challenge by Id
+//GetSubscritions get all subscritions for user
 func GetSubscriptions(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		claims, ok := r.Context().Value(basemodel.JwtKey).(basemodel.Claims)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(500)
+			fmt.Fprintf(w, `{"message":"Error on decode Context JWT"}`)
+			return
+		}
+
+		u := []model.Subscription{}
+		log.Printf("[getSubscriptions] search by user " + claims.UserID)
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID)}).All(&u); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		uj, _ := json.Marshal(u)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", uj)
+	}
+}
+
+//GetSubscritions get all subscritions for all user
+func GetAllSubscriptions(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ss := s.MongoDB.Copy()
 		defer ss.Close()
@@ -95,8 +123,7 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		}
 
 		u := model.Subscription{}
-		i := []model.ItemProgress{}
-		ii := model.ItemProgress{}
+		itemProgress := []model.ItemProgress{}
 		// Add an Id
 		u.ID = bson.NewObjectId()
 		u.CreatedAt = time.Now()
@@ -105,12 +132,9 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		u.ChallengeID = c.ID
 		u.IsComplete = false
 		for _, element := range c.Challengeitems {
-			ii = model.ItemProgress{}
-			ii.Index = element.Index
-			ii.Complete = false
-			i = append(i, ii)
+			itemProgress = append(itemProgress, CreateItemProgress(element))
 		}
-		u.ItemsProgress = i
+		u.ItemsProgress = itemProgress
 
 		ss.DB("gorest").C("subscriptions").Insert(u)
 		uj, _ := json.Marshal(u)
@@ -119,6 +143,14 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, "%s", uj)
 	}
+}
+//Maps ChallengeItem to ItemProgress
+func CreateItemProgress(element model.ChallengeItem) model.ItemProgress {
+	itemProgressList := model.ItemProgress{}
+	log.Printf("[CreateItemProgress] creating item progress for %s" ,element.ID)
+	itemProgressList.ChallengeItemID = element.ID
+	itemProgressList.Complete = false
+	return itemProgressList
 }
 
 func DeleteSubscription(s *db.Dispatch) http.HandlerFunc {

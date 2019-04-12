@@ -77,7 +77,9 @@ func CreateChallenge(s *db.Dispatch) http.HandlerFunc {
 		u.ID = bson.NewObjectId()
 		u.CreatedAt = time.Now()
 		u.UpdatedAt = time.Now()
-
+		for i := 0; i < len(u.Challengeitems); i++{
+			u.Challengeitems[i].ID = bson.NewObjectId()
+		}
 		ss.DB("gorest").C("challenges").Insert(u)
 		uj, _ := json.Marshal(u)
 
