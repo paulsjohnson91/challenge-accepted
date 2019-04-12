@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"log"
 	"time"
 
 	"github.com/pressly/chi"
@@ -13,7 +14,7 @@ import (
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	model "github.com/paulsjohnson91/challenge-accepted/models/challenges"
 )
-
+var challengeTypes = []string{"BASIC","TIMED"}
 //GetChallenge get a challenge by Id
 func GetChallenge(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +63,14 @@ func GetChallenges(s *db.Dispatch) http.HandlerFunc {
 		fmt.Fprintf(w, "%s", uj)
 	}
 }
+func stringInSlice(a string, list []string) bool {
+    for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
+}
 
 //CreateChallenge create challenge
 func CreateChallenge(s *db.Dispatch) http.HandlerFunc {
@@ -72,6 +81,13 @@ func CreateChallenge(s *db.Dispatch) http.HandlerFunc {
 
 		u := model.BasicChallenge{}
 		json.NewDecoder(r.Body).Decode(&u)
+		
+		if !stringInSlice(u.ChallengeType, challengeTypes) {
+			log.Printf("[CreateChallenge] Error, unknown challenge type %s", u.ChallengeType)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "challenge type not accepted: %s", u.ChallengeType)
+		}
 
 		// Add an Id
 		u.ID = bson.NewObjectId()

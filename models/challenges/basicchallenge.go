@@ -16,6 +16,7 @@ type ChallengeItem struct {
 type BasicChallenge struct {
 	ID             bson.ObjectId   `json:"id" bson:"_id"`
 	Name           string          `json:"name" bson:"name"`
+	ChallengeType  string          `json:"challengetype" bson:"challengetype"`
 	Description    string          `json:"description" bson:"description"`
 	Challengeitems []ChallengeItem `json:"challengeitems" bson:"challengeitems"`
 	CreatedAt      time.Time       `json:"created_at" bson:"created_at"`
