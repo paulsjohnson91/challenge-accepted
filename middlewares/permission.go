@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
@@ -82,16 +82,16 @@ func checkFlags(route string, perms int) bool {
 // if user have permissions granted
 func checkUserPermisson(action string, endpoint string, projectID string, claims model.Claims) bool {
 
-	log.Printf("[UserHavePermission] UserID = %q", claims.UserID)
-	log.Printf("[UserHavePermission] ProjectID = %q", projectID)
+	log.Info("[UserHavePermission] UserID = %q", claims.UserID)
+	log.Info("[UserHavePermission] ProjectID = %q", projectID)
 
 	perm, perr := service.UserGetPermissions(claims.UserID, projectID, endpoint)
 	if perr != nil {
-		log.Printf("[UserHavePermission] Err: %s", perr)
+		log.Info("[UserHavePermission] Err: %s", perr)
 		return false
 	}
 
-	log.Printf("[UserHavePermission] = %+v \n", perm)
+	log.Info("[UserHavePermission] = %+v \n", perm)
 
 	//interate each permission and sum, bit each bit
 	var perms = 0
@@ -101,11 +101,11 @@ func checkUserPermisson(action string, endpoint string, projectID string, claims
 
 	//check if return something and the flags are ok
 	if perms > 0 && checkFlags(action, perms) {
-		log.Printf("[UserHavePermission] User Authorized")
+		log.Info("[UserHavePermission] User Authorized")
 		return true
 	}
 
-	log.Printf("[UserHavePermission] User Unauthorized")
+	log.Info("[UserHavePermission] User Unauthorized")
 	return false
 }
 
@@ -138,7 +138,7 @@ func UserHavePermission(next http.Handler) http.Handler {
 		// 	return
 		// }
 
-		log.Printf("[UserHavePermission] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
+		log.Info("[UserHavePermission] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
 
 		if checkUserPermisson(r.Method, r.URL.RequestURI(), projectID, claims) {
 			next.ServeHTTP(w, r)

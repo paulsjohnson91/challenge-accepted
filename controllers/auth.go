@@ -3,8 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	model "github.com/paulsjohnson91/challenge-accepted/models"
@@ -36,7 +37,7 @@ func Auth(s *db.Dispatch) http.HandlerFunc {
 
 		t, err := service.GenerateToken(s, user)
 		if err != nil {
-			log.Printf("Error : %q", err)
+			log.Info("Error : %q", err)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(w, `{"message": %q}`, err)

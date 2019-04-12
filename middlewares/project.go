@@ -3,7 +3,7 @@ package middlewares
 import (
 	"context"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/pressly/chi"
@@ -19,7 +19,7 @@ func UserValidOnProject(next http.Handler) http.Handler {
 		slug := chi.URLParam(r, "slug")
 
 		if slug == "" {
-			log.Printf("[UserValidOnProject] Slug empty!")
+			log.Info("[UserValidOnProject] Slug empty!")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -32,11 +32,11 @@ func UserValidOnProject(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Printf("[UserValidOnProject] method=%s EndPoint=%s SLUG=%s", r.Method, r.URL.RequestURI(), slug)
+		log.Info("[UserValidOnProject] method=%s EndPoint=%s SLUG=%s", r.Method, r.URL.RequestURI(), slug)
 
 		project, err := service.UserIsValidOnProject(slug, claims.UserID)
 		if err != nil {
-			log.Printf("[UserValidOnProject] Err: %s", err)
+			log.Info("[UserValidOnProject] Err: %s", err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

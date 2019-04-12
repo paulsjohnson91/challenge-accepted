@@ -1,7 +1,7 @@
 package shared
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 )

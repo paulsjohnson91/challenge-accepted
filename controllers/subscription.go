@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-    "log"
+    log "github.com/sirupsen/logrus"
 	"github.com/pressly/chi"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -59,7 +59,7 @@ func GetSubscriptions(s *db.Dispatch) http.HandlerFunc {
 		}
 
 		u := []model.Subscription{}
-		log.Printf("[getSubscriptions] search by user " + claims.UserID)
+		log.Info("[getSubscriptions] search by user " + claims.UserID)
 		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID)}).All(&u); err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -147,7 +147,7 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 //Maps ChallengeItem to ItemProgress
 func CreateItemProgress(element model.ChallengeItem) model.ItemProgress {
 	itemProgressList := model.ItemProgress{}
-	log.Printf("[CreateItemProgress] creating item progress for %s" ,element.ID)
+	log.Info("[CreateItemProgress] creating item progress for %s" ,element.ID)
 	itemProgressList.ChallengeItemID = element.ID
 	itemProgressList.Complete = false
 	return itemProgressList

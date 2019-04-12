@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 
@@ -88,7 +88,7 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 		names, err := ss.DB("gorest").CollectionNames()
 		if err != nil {
 			// Handle error
-			log.Printf("Failed to get coll names: %v", err)
+			log.Info("Failed to get coll names: %v", err)
 			return
 		}
 
@@ -99,11 +99,11 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 				count, err := ss.DB("gorest").C("users").Count()
 				if err != nil {
 					// Handle error
-					log.Printf("Count on users table failed", err)
+					log.Info("Count on users table failed", err)
 					return
 				}
 
-				// log.Printf("There are " + strconv.Itoa(count) + " users")
+				// log.Info("There are " + strconv.Itoa(count) + " users")
 				if count == 0 {
 					isUsers = true
 				}
@@ -111,7 +111,7 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 			}
 		}
 		if isUsers == true {
-			log.Printf("There are no users, adding user as admin")
+			log.Info("There are no users, adding user as admin")
 			u.Admin = true
 		}
 

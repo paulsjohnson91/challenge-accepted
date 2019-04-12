@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -13,7 +13,7 @@ import (
 var logger *logrus.Logger
 
 func init() {
-	log.Printf("[LoggerRequest] loaded!")
+	log.Info("[LoggerRequest] loaded!")
 	logger = db.Logger()
 }
 

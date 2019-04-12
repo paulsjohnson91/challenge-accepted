@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	model "github.com/paulsjohnson91/challenge-accepted/models"
@@ -20,12 +20,12 @@ func UserIsAdmin(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Printf("[UserIsAdmin] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
+		log.Info("[UserIsAdmin] method=%s EndPoint=%s", r.Method, r.URL.RequestURI())
 
 		if service.UserAdminStatus(claims.UserID) {
 			next.ServeHTTP(w, r)
 		} else {
-			log.Printf("[UserIsAdmin] Unauthorized access to method=%s EndPoint=%s by user=%s", r.Method, r.URL.RequestURI(), claims.UserID)
+			log.Info("[UserIsAdmin] Unauthorized access to method=%s EndPoint=%s by user=%s", r.Method, r.URL.RequestURI(), claims.UserID)
 		}
 
 		w.WriteHeader(http.StatusUnauthorized)

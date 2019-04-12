@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 
 	"github.com/pressly/chi"
@@ -83,7 +83,7 @@ func CreateChallenge(s *db.Dispatch) http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&u)
 		
 		if !stringInSlice(u.ChallengeType, challengeTypes) {
-			log.Printf("[CreateChallenge] Error, unknown challenge type %s", u.ChallengeType)
+			log.Info("[CreateChallenge] Error, unknown challenge type %s", u.ChallengeType)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "challenge type not accepted: %s", u.ChallengeType)

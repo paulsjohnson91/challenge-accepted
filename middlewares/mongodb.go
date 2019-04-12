@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"context"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"net/http"
 	"time"
@@ -27,7 +27,7 @@ const AuthPassword = "admpass1"
 func MongoMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		log.Printf("MongoDB on request!")
+		log.Info("MongoDB on request!")
 
 		mongoDBDialInfo := &mgo.DialInfo{
 			Addrs: []string{os.Getenv("MONGODB_URL")},

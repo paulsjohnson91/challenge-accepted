@@ -1,7 +1,7 @@
 package dbs
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 
@@ -31,7 +31,7 @@ const AuthPassword = "admpass1"
 
 //StartMongoDB initialize session on mongodb
 func StartMongoDB(msg string) *MgoSession {
-	log.Println("Attempting to connect to " + os.Getenv("MONGODB_URL"))
+	log.Info("Attempting to connect to " + os.Getenv("MONGODB_URL"))
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs: []string{os.Getenv("MONGODB_URL")},
 		//Addrs:    []string{SERVER},
@@ -47,6 +47,6 @@ func StartMongoDB(msg string) *MgoSession {
 	}
 	mongoSession.SetMode(mgo.Monotonic, true)
 
-	log.Printf("[MongoDB] connected! %s", msg)
+	log.Info("[MongoDB] connected! %s", msg)
 	return newMgoSession(mongoSession)
 }

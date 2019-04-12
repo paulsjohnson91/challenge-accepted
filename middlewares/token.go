@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"context"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
@@ -38,7 +38,7 @@ func TokenAuthentication(next http.Handler) http.Handler {
 
 		//if token not recovered on the last 3 steps
 		if tokenStr == "" {
-			log.Printf("[RequireTokenAuthentication] Not have Token to validate")
+			log.Info("[RequireTokenAuthentication] Not have Token to validate")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -48,22 +48,22 @@ func TokenAuthentication(next http.Handler) http.Handler {
 		})
 
 		if claims, ok := token.Claims.(*mid.Claims); ok && token.Valid {
-			log.Printf("[RequireTokenAuthentication] Token valid! Go forward")
+			log.Info("[RequireTokenAuthentication] Token valid! Go forward")
 			ctx := context.WithValue(r.Context(), mid.JwtKey, *claims)
 			next.ServeHTTP(w, r.WithContext(ctx))
 
 		} else if ve, ok := err.(*jwt.ValidationError); ok {
 
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				log.Printf("[RequireTokenAuthentication] Thats not even token")
+				log.Info("[RequireTokenAuthentication] Thats not even token")
 			} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-				log.Printf("[RequireTokenAuthentication] Token is expired or not active")
+				log.Info("[RequireTokenAuthentication] Token is expired or not active")
 			} else {
-				log.Printf("[RequireTokenAuthentication] Couldn't handle token: %q", err)
+				log.Info("[RequireTokenAuthentication] Couldn't handle token: %q", err)
 			}
 
 		} else {
-			log.Printf("[RequireTokenAuthentication] Couldn't handle token: %q", err)
+			log.Info("[RequireTokenAuthentication] Couldn't handle token: %q", err)
 		}
 
 		w.WriteHeader(http.StatusUnauthorized)
