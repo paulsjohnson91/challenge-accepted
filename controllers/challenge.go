@@ -17,7 +17,6 @@ var challengeTypes = []string{"BASIC","TIMED"}
 //GetChallenge get a challenge by Id
 func GetChallenge(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("HERE")
 		ss := s.MongoDB.Copy()
 		defer ss.Close()
 

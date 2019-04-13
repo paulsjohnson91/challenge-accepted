@@ -64,6 +64,15 @@ func GetUsers(s *db.Dispatch) http.HandlerFunc {
 	}
 }
 
+func doesUserExist(s *db.Dispatch, email string) bool {
+	ss := s.MongoDB.Copy()
+	u := model.User{}
+	if err := ss.DB("gorest").C("users").Find(bson.M{"email": email}).One(&u); err != nil {
+		return false
+	}
+	return true
+}
+
 //CreateUser create a new user
 func CreateUser(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +82,11 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 
 		u := model.User{}
 		json.NewDecoder(r.Body).Decode(&u)
-
+        if doesUserExist(s,u.Email){
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprintf(w, "User already exists:%s",u.Email)
+			return
+		}
 		// Add an Id
 		u.ID = bson.NewObjectId()
 		u.CreatedAt = time.Now()
