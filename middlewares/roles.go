@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	model "github.com/paulsjohnson91/challenge-accepted/models"

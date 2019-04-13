@@ -1,12 +1,12 @@
 package dbs
 
 import (
-	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 
 	mgo "gopkg.in/mgo.v2"
 )
+
 
 //MgoSession and session
 type MgoSession struct {
@@ -47,6 +47,6 @@ func StartMongoDB(msg string) *MgoSession {
 	}
 	mongoSession.SetMode(mgo.Monotonic, true)
 
-	log.Info("[MongoDB] connected! %s", msg)
+	log.Infof("[MongoDB] connected! %s", msg)
 	return newMgoSession(mongoSession)
 }

@@ -1,21 +1,23 @@
 package middlewares
 
 import (
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	// "github.com/paulsjohnson91/challenge-accepted/logger"
 
-	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	model "github.com/paulsjohnson91/challenge-accepted/models"
+	"github.com/paulsjohnson91/challenge-accepted/logger"
 )
 
-var logger *logrus.Logger
+	var log = logger.Logger()
 
-func init() {
-	log.Info("[LoggerRequest] loaded!")
-	logger = db.Logger()
-}
+// var logger *logger.Logger
+
+// func init() {
+// 	// log.Info("[LoggerRequest] loaded!")
+// 	logger = logger.Logger()
+// }
 
 // LoggerRequest middleware for logger all request maded
 func LoggerRequest(next http.Handler) http.Handler {
@@ -26,7 +28,7 @@ func LoggerRequest(next http.Handler) http.Handler {
 			claims.UserID = "Unknown"
 		}
 
-		logger.WithFields(logrus.Fields{
+		log.WithFields(logrus.Fields{
 			"user_id":  claims.UserID,
 			"method":   r.Method,
 			"endpoint": r.URL.RequestURI(),

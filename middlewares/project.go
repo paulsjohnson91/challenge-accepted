@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/pressly/chi"

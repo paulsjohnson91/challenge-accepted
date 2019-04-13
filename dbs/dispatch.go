@@ -2,10 +2,12 @@ package dbs
 
 import (
 	"fmt"
-
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
+	"github.com/paulsjohnson91/challenge-accepted/logger"
 )
+
+	var log = logger.Logger()
 
 //Dispatch choose a db session
 // add new dispath of other database just put here
@@ -21,8 +23,7 @@ func StartDispatch() *Dispatch {
 	//add session of mongodb
 	mongosession := StartMongoDB("Dispatch Service").Session
 	// add logger for dispatch
-	logger := Logger()
 
-	return &Dispatch{MongoDB: mongosession, Logger: logger}
+	return &Dispatch{MongoDB: mongosession, Logger: logger.Logger()}
 
 }

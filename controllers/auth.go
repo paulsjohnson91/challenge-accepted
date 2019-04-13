@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	model "github.com/paulsjohnson91/challenge-accepted/models"
 	service "github.com/paulsjohnson91/challenge-accepted/services"
+	"github.com/paulsjohnson91/challenge-accepted/logger"
 )
+
+	var log = logger.Logger()
 
 //Home a home API
 func Home() http.HandlerFunc {
@@ -23,7 +24,6 @@ func Home() http.HandlerFunc {
 //Auth get a valid token and expire
 func Auth(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var user model.User
 		decoder := json.NewDecoder(r.Body)
 		errDecoder := decoder.Decode(&user)

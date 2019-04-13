@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
