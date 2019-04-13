@@ -22,9 +22,6 @@ func newMgoSession(s *mgo.Session) *MgoSession {
 // DBNAME the name of the DB instance
 const DBNAME = "gorest"
 
-// DOCNAME the name of the document
-const DOCNAME = "albums"
-
 const AuthUserName = "adminuser"
 
 const AuthPassword = "admpass1"

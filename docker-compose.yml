@@ -1,29 +1,38 @@
-mongo:
-    image: vepo/mongo
-    container_name: challenge-mongo
-    restart: always
-    ports:
-    - 27017:27017
-    # volumes:
-    # - /var/data/challenge-mongo-data:/data/db
-    # - /var/data/challenge-mongo-bkp:/data/bkp
-    environment:
-    - AUTH=yes
-    - ADMIN_USER=admin
-    - ADMIN_PASS=admin
-    - APPLICATION_DATABASE=gorest
-    - APPLICATION_USER=adminuser
-    - APPLICATION_PASS=admpass1
+version: '3.7'
+services:
+  mongo:
+      image: vepo/mongo
+      container_name: challenge-mongo
+      restart: always
+      ports:
+      - 27017:27017
+      networks:
+      - mongo_net
+      volumes:
+      - /var/data/challenge-mongo-data:/data/db
+      - /var/data/challenge-mongo-bkp:/data/bkp
+      environment:
+      - AUTH=yes
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+      - APPLICATION_DATABASE=gorest
+      - APPLICATION_USER=adminuser
+      - APPLICATION_PASS=admpass1
 
-challengeaccepted:
-  image: challengeaccepted
-  container_name: challenge-accepted-api
-  # restart: always
-  ports:
-    - 3334:3333
-  links:
-    - mongo
-  environment:
-    - MONGODB_URL=mongo:27017
-    - DB_USER=adminuser
-    - DB_PASS=admpass1
+  challengeaccepted:
+    image: challengeaccepted
+    container_name: challenge-accepted-api
+    # restart: always
+    ports:
+      - 3334:3333
+    links:
+      - mongo
+    environment:
+      - MONGODB_URL=mongo:27017
+      - DB_USER=adminuser
+      - DB_PASS=admpass1
+    networks:
+      - mongo_net
+networks:
+  mongo_net:
+    driver: bridge

@@ -9,7 +9,6 @@ import (
 	"github.com/pressly/chi"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	model "github.com/paulsjohnson91/challenge-accepted/models"
 	lib "github.com/paulsjohnson91/challenge-accepted/shared"
@@ -91,10 +90,11 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 			return
 		}
 
-		// Simply search in the names slice, e.g.
+		isUsersTable := false
 		isUsers := false
 		for _, name := range names {
 			if name == "users" {
+				isUsersTable = true
 				count, err := ss.DB("gorest").C("users").Count()
 				if err != nil {
 					// Handle error
@@ -102,14 +102,13 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 					return
 				}
 
-				// log.Info("There are " + strconv.Itoa(count) + " users")
 				if count == 0 {
 					isUsers = true
 				}
 				break
 			}
 		}
-		if isUsers == true {
+		if isUsers == true || isUsersTable == false {
 			log.Info("There are no users, adding user as admin")
 			u.Admin = true
 		}
