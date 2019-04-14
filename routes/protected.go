@@ -40,6 +40,9 @@ func Protected(s *db.Dispatch, cors *cors.Cors) func(r chi.Router) {
 		//Subscriptions
 		r.Get("/allsubscription", controller.GetAllSubscriptions(s))
 
+		//Favourites
+		r.Get("/allfavourites", controller.GetAllFavourites(s))
+
 		//CRUD Permission
 		// r.Post("/permission", controller.CreatePermission(s))
 		// r.Get("/permission/:id", controller.GetPermission(s))
