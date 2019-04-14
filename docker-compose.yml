@@ -22,17 +22,69 @@ services:
   challengeaccepted:
     image: challengeaccepted
     container_name: challenge-accepted-api
-    # restart: always
+    restart: always
     ports:
       - 3334:3333
     links:
       - mongo
+      # - splunk
     environment:
       - MONGODB_URL=mongo:27017
       - DB_USER=adminuser
       - DB_PASS=admpass1
     networks:
       - mongo_net
+
+  portainer:
+    image: portainer/portainer
+    privileged: true
+    restart: unless-stopped
+    command: --no-auth
+    container_name: portainer
+    ports:
+      - 9000:9000
+    networks:
+      - mongo_net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mongo-express:
+    container_name: mongo-express
+    links:
+      - 'mongo'
+    ports:
+      - '8081:8081'
+    environment:
+      - 'ME_CONFIG_MONGODB_SERVER=mongo'
+      - 'ME_CONFIG_MONGODB_PORT=27017'
+      - 'ME_CONFIG_OPTIONS_EDITORTHEME=ambiance'
+      # - 'ME_CONFIG_BASICAUTH_USERNAME=admin'
+      # - 'ME_CONFIG_BASICAUTH_PASSWORD=admin'
+      # - 'ME_CONFIG_MONGODB_ENABLE_ADMIN=false'
+      # - 'ME_CONFIG_MONGODB_AUTH_DATABASE=admin'
+      # - 'ME_CONFIG_MONGODB_AUTH_USERNAME=admin'
+      # - 'ME_CONFIG_MONGODB_AUTH_PASSWORD=admin'
+      - 'ME_CONFIG_MONGODB_ADMINUSERNAME=admin'
+      - 'ME_CONFIG_MONGODB_ADMINPASSWORD=admin'
+    image: mongo-express 
+    networks:
+      - mongo_net
+
+  # splunk:
+  #   image: splunk/splunk
+  #   container_name: splunk
+  #   ports:
+  #     - 8000:8000
+  #     - 9997:9997
+  #     - 8088:8088
+  #     - 1514:1514
+  #   environment:
+  #     - SPLUNK_PASSWORD=MySplunkPass-01
+  #     - SPLUNK_START_ARGS=--accept-license
+  #     - SPLUNK_ENABLE_LISTEN=9997
+  #     - SPLUNK_ADD="tcp 1514"
+
+      
 networks:
   mongo_net:
     driver: bridge
