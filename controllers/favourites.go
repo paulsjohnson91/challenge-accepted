@@ -56,7 +56,6 @@ func GetAllFavourites(s *db.Dispatch) http.HandlerFunc {
 //CreateChallenge create challenge
 func CreateFavourite(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		ss := s.MongoDB.Copy()
 		defer ss.Close()
 
@@ -75,7 +74,6 @@ func CreateFavourite(s *db.Dispatch) http.HandlerFunc {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-
 		oid := bson.ObjectIdHex(id)
 
 
@@ -83,27 +81,57 @@ func CreateFavourite(s *db.Dispatch) http.HandlerFunc {
 
 		// uu := []model.Favourites{}
 		// ss.DB("gorest").C("favourites").FindId(oid).All(&uu)
-
-		count, _ := ss.DB("gorest").C("favourites").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).Count()
-
-		if(count > 0){
+		if err := ss.DB("gorest").C("favourites").Find(bson.M{"_id": bson.ObjectIdHex(claims.UserID)}).One(&u); err != nil {
+			u.UserID = bson.ObjectIdHex(claims.UserID)
+			ss.DB("gorest").C("favourites").Insert(u)
+		}
+		c := model.BasicChallenge{}
+		if err := ss.DB("gorest").C("challenges").FindId(oid).One(&c); err != nil {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusConflict)
-			fmt.Fprintf(w, "%s", "Favourite already exists")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Challenge id %s doesn't exist", oid)
 			return
 		}
-
+		if Contains(u.ChallengeIDs, oid) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprintf(w, "%s", `{"message":"Favourite already exists"}`)
+			return
+		}
 		// Add an Id
-		u.ID = bson.NewObjectId()
-		u.ChallengeID = oid
-		u.UserID = bson.ObjectIdHex(claims.UserID)
-		ss.DB("gorest").C("favourites").Insert(u)
-		uj, _ := json.Marshal(u)
+		u.ChallengeIDs = append(u.ChallengeIDs,oid)
+		log.Infof("%s",u)
+		if err := ss.DB("gorest").C("favourites").Update(bson.M{"_id": bson.ObjectIdHex(claims.UserID)}, &u); err != nil {
+			switch err {
+			default:
+				msg := []byte(`{"message":"ObjectId invalid"}`)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				fmt.Fprintf(w, "%s", msg)
 
+			case mgo.ErrNotFound:
+				msg := []byte(`{"message":"ObjectId not found"}`)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				fmt.Fprintf(w, "%s", msg)
+			}
+			return
+		}
+		uj, _ := json.Marshal(u)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, "%s", uj)
+		return
 	}
+}
+
+func Contains(a []bson.ObjectId, x bson.ObjectId) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }
 
 func DeleteFavourite(s *db.Dispatch) http.HandlerFunc {
