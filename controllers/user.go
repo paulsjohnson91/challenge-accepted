@@ -47,7 +47,10 @@ func GetUser(s *db.Dispatch) http.HandlerFunc {
 
 func GetUsers(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		setupCORS(&w, r)
+		// if (*r).Method == "OPTIONS"{
+		// 	return
+		// }
 		ss := s.MongoDB.Copy()
 		defer ss.Close()
 
