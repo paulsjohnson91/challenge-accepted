@@ -21,10 +21,10 @@ services:
 
   challengeaccepted:
     image: challengeaccepted
-    container_name: challenge-accepted-api
+    container_name: challengeaccepted
     restart: always
     ports:
-      - 3334:3333
+      - 3333:3333
     links:
       - mongo
       # - splunk
@@ -32,6 +32,18 @@ services:
       - MONGODB_URL=mongo:27017
       - DB_USER=adminuser
       - DB_PASS=admpass1
+    networks:
+      - mongo_net
+
+  challengeacceptedbackend:
+    image: challenge-accepted-backend:0.1
+    container_name: challenge-accepted-backend
+    restart: always
+    ports:
+      - 4201:4200
+    links:
+      - challengeaccepted
+      # - splunk
     networks:
       - mongo_net
 
