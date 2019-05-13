@@ -30,7 +30,7 @@ func Home() http.HandlerFunc {
 }
 
 //Auth get a valid token and expire
-func Auth(s *db.Dispatch) http.HandlerFunc {
+func Auth1(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		setupCORS(&w, r)
 		if (*r).Method == "OPTIONS"{
@@ -53,9 +53,9 @@ func Auth(s *db.Dispatch) http.HandlerFunc {
 			fmt.Fprintf(w, `{"message": %q}`, err)
 			return
 		}
-
+        log.Info("here")
 		//write json
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{"token":%q, "expire":%s}`, t.Token, t.Expire)
+		fmt.Fprintf(w, `{"token":%q, "expire":%s, "firstname":%s, "lastname":%s, "admin":%s, "userid":%s}`, t.Token, t.Expire, t.FirstName, t.LastName, t.Admin, t.UserID)
 	}
 }

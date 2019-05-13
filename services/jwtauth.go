@@ -33,11 +33,12 @@ func GenerateToken(s *db.Dispatch, user model.User) (model.TokenEndExpire, error
 	if errPwd := lib.Compare(u.Password, user.Password); errPwd != nil {
 		return te, fmt.Errorf("Invalid Password")
 	}
-
 	//build claims
 	claims := model.Claims{
 		u.ID.Hex(),
 		u.Admin,
+		u.FirstName,
+		u.LastName,
 		jwt.StandardClaims{
 			ExpiresAt: expir,
 			Issuer:    "localhost:3333",
