@@ -54,6 +54,10 @@ func GenerateToken(s *db.Dispatch, user model.User) (model.TokenEndExpire, error
 
 	te.Token = t
 	te.Expire = fmt.Sprintf("%q", time.Unix(expir, 0))
+	te.Admin = u.Admin
+	te.FirstName = u.FirstName
+	te.LastName = u.LastName
+	te.UserID = u.ID.Hex()
 
 	return te, nil
 }
