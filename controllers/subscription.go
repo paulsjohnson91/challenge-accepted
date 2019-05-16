@@ -192,9 +192,11 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			if element.ChallengeItemID == iid {
 				if(subitem.Complete == "true"){
 					u.ItemsProgress[i].Complete = true
+					
 				} else{
 					u.ItemsProgress[i].Complete = false
 				}
+				u.UpdatedAt = time.Now()
 			}
 		}
 
