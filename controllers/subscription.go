@@ -162,6 +162,8 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 		subitem := model.SubscriptionItem{}
 		json.NewDecoder(r.Body).Decode(&subitem)
 
+
+
 		// Grab id
 		id := chi.URLParam(r, "id")
 		itemid := chi.URLParam(r, "itemid")
@@ -181,7 +183,11 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			return
 		}
 
-		itemProgress := []model.ItemProgress{}
+		if bson.ObjectIdHex(claims.UserID) != u.UserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		for i, element := range u.ItemsProgress {
 			if element.ChallengeItemID == iid {
 				if(subitem.Complete == "true"){
