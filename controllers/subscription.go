@@ -187,16 +187,17 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
-
 		for i, element := range u.ItemsProgress {
 			if element.ChallengeItemID == iid {
 				if(subitem.Complete == "true"){
 					u.ItemsProgress[i].Complete = true
+					u.ItemsProgress[i].CompletedAt = time.Now()
 					
 				} else{
 					u.ItemsProgress[i].Complete = false
 				}
 				u.UpdatedAt = time.Now()
+				
 			}
 		}
 
@@ -217,7 +218,13 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 				fmt.Fprintf(w, "%s", msg)
 			}
 			return
-		}
+		} 
+		uj, _ := json.Marshal(u)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", uj)
+	
 	}
 }
 
