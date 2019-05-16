@@ -143,6 +143,77 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		fmt.Fprintf(w, "%s", uj)
 	}
 }
+
+//CreateChallenge create challenge
+func UpdateItem(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		claims, ok := r.Context().Value(basemodel.JwtKey).(basemodel.Claims)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(500)
+			fmt.Fprintf(w, `{"message":"Error on decode Context JWT"}`)
+			return
+		}
+
+		subitem := model.SubscriptionItem{}
+		json.NewDecoder(r.Body).Decode(&subitem)
+
+		// Grab id
+		id := chi.URLParam(r, "id")
+		itemid := chi.URLParam(r, "itemid")
+
+
+		// Verify id is ObjectId, otherwise bail
+		if !bson.IsObjectIdHex(id) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		oid := bson.ObjectIdHex(id)
+		iid := bson.ObjectIdHex(itemid)
+		u := model.Subscription{}
+		if err := ss.DB("gorest").C("subscriptions").FindId(oid).One(&u); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		itemProgress := []model.ItemProgress{}
+		for i, element := range u.ItemsProgress {
+			if element.ChallengeItemID == iid {
+				if(subitem.Complete == "true"){
+					u.ItemsProgress[i].Complete = true
+				} else{
+					u.ItemsProgress[i].Complete = false
+				}
+			}
+		}
+
+		c := ss.DB("gorest").C("subscriptions")
+
+		if err := c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, &u); err != nil {
+			switch err {
+			default:
+				msg := []byte(`{"message":"ObjectId invalid"}`)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				fmt.Fprintf(w, "%s", msg)
+
+			case mgo.ErrNotFound:
+				msg := []byte(`{"message":"ObjectId not found"}`)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				fmt.Fprintf(w, "%s", msg)
+			}
+			return
+		}
+	}
+}
+
+
 //Maps ChallengeItem to ItemProgress
 func CreateItemProgress(element model.ChallengeItem) model.ItemProgress {
 	itemProgressList := model.ItemProgress{}
