@@ -35,9 +35,9 @@ services:
     networks:
       - mongo_net
 
-  challengeacceptedbackend:
-    image: challenge-accepted-backend:0.1
-    container_name: challenge-accepted-backend
+  challengeacceptedbackoffice:
+    image: challenge-accepted-backoffice:0.1
+    container_name: challenge-accepted-backoffice
     restart: always
     ports:
       - 4201:4200

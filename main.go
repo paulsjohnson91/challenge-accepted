@@ -25,7 +25,7 @@ func init() {
 func main() {
 	sessions := db.StartDispatch()
 	// addr := os.Getenv("API_URL")
-	addr := ":3334"
+	addr := ":3333"
 
 	log.Infof("[Server] Starting server on port %s\n", addr)
 	http.ListenAndServe(addr, route.Router(sessions))
