@@ -22,7 +22,7 @@ func GenerateToken(s *db.Dispatch, user model.User) (model.TokenEndExpire, error
 	// moc to return
 	var te model.TokenEndExpire
 	// expire unix
-	var expir = time.Now().Add(time.Minute * 60).Unix()
+	var expir = time.Now().Add(time.Minute * 60 * 60).Unix()
 
 	//find user
 	u := model.User{}

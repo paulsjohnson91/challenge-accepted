@@ -14,6 +14,61 @@ import (
 	model "github.com/paulsjohnson91/challenge-accepted/models/challenges"
 )
 
+//Get Progress of Subscription
+func GetProgress(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		claims, ok := r.Context().Value(basemodel.JwtKey).(basemodel.Claims)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(500)
+			fmt.Fprintf(w, `{"message":"Error on decode Context JWT"}`)
+			return
+		}
+
+		// Grab id
+		id := chi.URLParam(r, "id")
+
+		// Verify id is ObjectId, otherwise bail
+		if !bson.IsObjectIdHex(id) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		oid := bson.ObjectIdHex(id)
+		u := model.Subscription{}
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
+			progress := model.Progress{}
+			progress.Progress = 0.0
+			progress.Active = false
+			uj, _ := json.Marshal(progress)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, "%s", uj)
+			return
+		}
+		items := 0.0
+		itemsComplete := 0.0
+        for _, it := range u.ItemsProgress {
+			if it.Complete == true {
+				itemsComplete = itemsComplete + 1
+			}
+			items = items + 1
+		}
+
+		progress := model.Progress{}
+		progress.Active = true
+		progress.Progress = itemsComplete / items
+
+		uj, _ := json.Marshal(progress)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", uj)
+	}
+}
+
 //GetChallenge get a challenge by Id
 func GetSubscription(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +91,64 @@ func GetSubscription(s *db.Dispatch) http.HandlerFunc {
 			return
 		}
 
+		items := 0.0
+		itemsComplete := 0.0
+        for _, it := range u.ItemsProgress {
+			if it.Complete == true {
+				itemsComplete = itemsComplete + 1
+			}
+			items = items + 1
+		}
+
+		u.Progress = itemsComplete / items
+
+		uj, _ := json.Marshal(u)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", uj)
+	}
+}
+
+//GetChallenge get a challenge by Id
+func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		claims, ok := r.Context().Value(basemodel.JwtKey).(basemodel.Claims)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(500)
+			fmt.Fprintf(w, `{"message":"Error on decode Context JWT"}`)
+			return
+		}
+
+		// Grab id
+		id := chi.URLParam(r, "id")
+
+		// Verify id is ObjectId, otherwise bail
+		if !bson.IsObjectIdHex(id) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		oid := bson.ObjectIdHex(id)
+		u := model.Subscription{}
+		if err := ss.DB("gorest").C("challenges").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		items := 0.0
+		itemsComplete := 0.0
+        for _, it := range u.ItemsProgress {
+			if it.Complete == true {
+				itemsComplete = itemsComplete + 1
+			}
+			items = items + 1
+		}
+
+		u.Progress = itemsComplete / items
+		
 		uj, _ := json.Marshal(u)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

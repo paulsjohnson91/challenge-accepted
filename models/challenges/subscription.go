@@ -21,4 +21,5 @@ type Subscription struct {
 	CreatedAt     time.Time      `json:"created_at" bson:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at" bson:"updated_at"`
 	IsComplete    bool           `json:"iscomplete" bson:"iscomplete"`
+	Progress      float64        `json:"progress" bson:"progress"`
 }

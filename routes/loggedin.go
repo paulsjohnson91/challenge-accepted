@@ -31,6 +31,7 @@ func LoggedIn(s *db.Dispatch, cors *cors.Cors) func(r chi.Router) {
 		r.Put("/subscription/{id}", controller.UpdateSubscription(s))
 		r.Delete("/subscription/{id}", controller.DeleteSubscription(s))
 		r.Post("/subscription/{id}/{itemid}", controller.UpdateItem(s))
+		r.Get("/progress/{id}", controller.GetProgress(s))
 
 
 		r.Get("/favourites", controller.GetFavourites(s))
