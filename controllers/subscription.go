@@ -60,7 +60,7 @@ func GetProgress(s *db.Dispatch) http.HandlerFunc {
 
 		progress := model.Progress{}
 		progress.Active = true
-		progress.Progress = itemsComplete / items
+		progress.Progress = itemsComplete * 100 / items
 
 		uj, _ := json.Marshal(progress)
 		w.Header().Set("Content-Type", "application/json")
@@ -100,7 +100,7 @@ func GetSubscription(s *db.Dispatch) http.HandlerFunc {
 			items = items + 1
 		}
 
-		u.Progress = itemsComplete / items
+		u.Progress = itemsComplete * 100 / items
 
 		uj, _ := json.Marshal(u)
 		w.Header().Set("Content-Type", "application/json")
@@ -147,8 +147,8 @@ func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
 			items = items + 1
 		}
 
-		u.Progress = itemsComplete / items
-		
+		u.Progress = itemsComplete * 100 / items
+
 		uj, _ := json.Marshal(u)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
