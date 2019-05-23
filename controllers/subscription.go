@@ -8,7 +8,6 @@ import (
 	"github.com/pressly/chi"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
 	db "github.com/paulsjohnson91/challenge-accepted/dbs"
 	basemodel "github.com/paulsjohnson91/challenge-accepted/models"
 	model "github.com/paulsjohnson91/challenge-accepted/models/challenges"
@@ -134,7 +133,8 @@ func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
 
 		oid := bson.ObjectIdHex(id)
 		u := model.Subscription{}
-		if err := ss.DB("gorest").C("challenges").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
+			log.Info(err)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
