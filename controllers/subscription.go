@@ -133,7 +133,7 @@ func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
 
 		oid := bson.ObjectIdHex(id)
 		u := model.Subscription{}
-		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid,"iscomplete": false}).One(&u); err != nil {
 			log.Info(err)
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -172,7 +172,35 @@ func GetSubscriptions(s *db.Dispatch) http.HandlerFunc {
 
 		u := []model.Subscription{}
 		log.Info("[getSubscriptions] search by user " + claims.UserID)
-		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID)}).All(&u); err != nil {
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID),"iscomplete": false}).All(&u); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		uj, _ := json.Marshal(u)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", uj)
+	}
+}
+
+//GetCompletedSubscriptions get all subscritions for user
+func GetCompletedSubscriptions(s *db.Dispatch) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ss := s.MongoDB.Copy()
+		defer ss.Close()
+
+		claims, ok := r.Context().Value(basemodel.JwtKey).(basemodel.Claims)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(500)
+			fmt.Fprintf(w, `{"message":"Error on decode Context JWT"}`)
+			return
+		}
+
+		u := []model.Subscription{}
+		log.Info("[getSubscriptions] search by user " + claims.UserID)
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID),"iscomplete": true}).All(&u); err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
