@@ -247,6 +247,7 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 			itemProgress = append(itemProgress, CreateItemProgress(element))
 		}
 		u.ItemsProgress = itemProgress
+		u.Progress = 0
 
 		ss.DB("gorest").C("subscriptions").Insert(u)
 		uj, _ := json.Marshal(u)
