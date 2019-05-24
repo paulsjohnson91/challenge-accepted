@@ -361,6 +361,29 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 		u.Progress = itemsComplete * 100 / items
 		if u.Progress == 100 {
 			u.IsComplete = true
+			user := basemodel.User{}
+			if err := ss.DB("gorest").C("users").FindId(oid).One(&user); err == nil {
+				user.Completed = user.Completed + 1
+				if err := ss.DB("gorest").C("users").Update(bson.M{"_id": bson.ObjectIdHex(id)}, &user); err != nil {
+					switch err {
+					default:
+						msg := []byte(`{"message":"Could not update user progress"}`)
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusNotFound)
+						fmt.Fprintf(w, "%s", msg)
+		
+					case mgo.ErrNotFound:
+						msg := []byte(`{"message":"Couple not update user progress"}`)
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusNotFound)
+						fmt.Fprintf(w, "%s", msg)
+					}
+					return
+				}
+			}
+
+
+			
 		}
 
 		uj, _ := json.Marshal(u)
