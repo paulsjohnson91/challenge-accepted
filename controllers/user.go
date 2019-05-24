@@ -94,7 +94,7 @@ func CreateUser(s *db.Dispatch) http.HandlerFunc {
 		u.ID = bson.NewObjectId()
 		u.CreatedAt = time.Now()
 		u.UpdatedAt = time.Now()
-
+		u.Completed = 0
 		if passwd, err := lib.Encrypt(u.Password); err == nil {
 			u.Password = passwd
 		}
@@ -152,7 +152,7 @@ func CreateAdminUser(s *db.Dispatch) http.HandlerFunc {
 		u.ID = bson.NewObjectId()
 		u.CreatedAt = time.Now()
 		u.UpdatedAt = time.Now()
-
+		u.Completed = 0
 		if passwd, err := lib.Encrypt(u.Password); err == nil {
 			u.Password = passwd
 		}
@@ -228,7 +228,10 @@ func UpdateUser(s *db.Dispatch) http.HandlerFunc {
 		u := model.User{}
 		json.NewDecoder(r.Body).Decode(&u)
 		u.UpdatedAt = time.Now()
-
+		if passwd, err := lib.Encrypt(u.Password); err == nil {
+			u.Password = passwd
+		}
+		u.Completed = 0
 		c := ss.DB("gorest").C("users")
 
 		if err := c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, &u); err != nil {

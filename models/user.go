@@ -14,6 +14,7 @@ type User struct {
 	FirstName string        `json:"firstname" bson:"firstname"`
 	LastName  string        `json:"lastname" bson:"lastname"`
 	Admin     bool          `json:"admin" bson:"admin"`
+	Completed int           `json:"completed" bson:"completed"`
 	CreatedAt time.Time     `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at" bson:"updated_at"`
 }

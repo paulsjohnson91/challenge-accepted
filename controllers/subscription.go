@@ -156,7 +156,7 @@ func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
 	}
 }
 
-//GetSubscritions get all subscritions for user
+//GetSubscriptions get all subscritions for user
 func GetSubscriptions(s *db.Dispatch) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ss := s.MongoDB.Copy()
@@ -348,6 +348,21 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			}
 			return
 		} 
+
+		items := 0.0
+		itemsComplete := 0.0
+        for _, it := range u.ItemsProgress {
+			if it.Complete == true {
+				itemsComplete = itemsComplete + 1
+			}
+			items = items + 1
+		}
+
+		u.Progress = itemsComplete * 100 / items
+		if u.Progress == 100 {
+			u.IsComplete = true
+		}
+
 		uj, _ := json.Marshal(u)
 
 		w.Header().Set("Content-Type", "application/json")
