@@ -263,11 +263,28 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		} else {
 			if(isSubscription.IsComplete == true){
 				isSubscription.IsComplete = false
-				for _, element := range isSubscription.ItemsProgress {
-					element.Complete = false
+				for i, _ := range isSubscription.ItemsProgress {
+					isSubscription.ItemsProgress[i].Complete = false
 				}
-			}
-			w.WriteHeader(http.StatusConflict)
+				c := ss.DB("gorest").C("subscriptions")
+
+				if err := c.Update(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}, &isSubscription); err != nil {
+					switch err {
+					default:
+						msg := []byte(`{"message":"ObjectId invalid"}`)
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusNotFound)
+						fmt.Fprintf(w, "%s", msg)
+		
+					case mgo.ErrNotFound:
+						msg := []byte(`{"message":"ObjectId not found"}`)
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusNotFound)
+						fmt.Fprintf(w, "%s", msg)
+					}
+					return
+				} 
+				}
 			uj, _ := json.Marshal(isSubscription)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
