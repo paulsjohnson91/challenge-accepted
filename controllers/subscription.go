@@ -329,7 +329,19 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 				
 			}
 		}
+		items := 0.0
+		itemsComplete := 0.0
+        for _, it := range u.ItemsProgress {
+			if it.Complete == true {
+				itemsComplete = itemsComplete + 1
+			}
+			items = items + 1
+		}
 
+		u.Progress = itemsComplete * 100 / items
+		if u.Progress == 100 {
+			u.IsComplete = true
+		}
 		c := ss.DB("gorest").C("subscriptions")
 
 		if err := c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, &u); err != nil {
@@ -349,18 +361,8 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			return
 		} 
 
-		items := 0.0
-		itemsComplete := 0.0
-        for _, it := range u.ItemsProgress {
-			if it.Complete == true {
-				itemsComplete = itemsComplete + 1
-			}
-			items = items + 1
-		}
 
-		u.Progress = itemsComplete * 100 / items
-		if u.Progress == 100 {
-			u.IsComplete = true
+		if u.IsComplete == true {
 			user := basemodel.User{}
 			if err := ss.DB("gorest").C("users").FindId(oid).One(&user); err == nil {
 				user.Completed = user.Completed + 1
