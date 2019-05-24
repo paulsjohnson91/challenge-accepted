@@ -312,6 +312,11 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			return
 		}
 
+		if u.IsComplete == true {
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
+
 		if bson.ObjectIdHex(claims.UserID) != u.UserID {
 			w.WriteHeader(http.StatusForbidden)
 			return
@@ -361,21 +366,35 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 			return
 		} 
 
-
 		if u.IsComplete == true {
 			user := basemodel.User{}
-			if err := ss.DB("gorest").C("users").FindId(oid).One(&user); err == nil {
+			if err := ss.DB("gorest").C("users").FindId(bson.ObjectIdHex(claims.UserID)).One(&user); err != nil {
+				switch err {
+				default:
+					msg := []byte(`{"message":"Could not update user progress"}`)
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprintf(w, "%s", msg)
+	
+				case mgo.ErrNotFound:
+					msg := []byte(`{"message":"Could not update user progress"}`)
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusNotFound)
+					fmt.Fprintf(w, "%s", msg)
+				}
+				return
+			} else {
 				user.Completed = user.Completed + 1
-				if err := ss.DB("gorest").C("users").Update(bson.M{"_id": bson.ObjectIdHex(id)}, &user); err != nil {
+				if err := ss.DB("gorest").C("users").Update(bson.M{"_id": bson.ObjectIdHex(claims.UserID)}, &user); err != nil {
 					switch err {
 					default:
 						msg := []byte(`{"message":"Could not update user progress"}`)
 						w.Header().Set("Content-Type", "application/json")
-						w.WriteHeader(http.StatusNotFound)
+						w.WriteHeader(http.StatusInternalServerError)
 						fmt.Fprintf(w, "%s", msg)
 		
 					case mgo.ErrNotFound:
-						msg := []byte(`{"message":"Couple not update user progress"}`)
+						msg := []byte(`{"message":"Could not update user progress"}`)
 						w.Header().Set("Content-Type", "application/json")
 						w.WriteHeader(http.StatusNotFound)
 						fmt.Fprintf(w, "%s", msg)
@@ -383,9 +402,7 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 					return
 				}
 			}
-
-
-			
+		
 		}
 
 		uj, _ := json.Marshal(u)
