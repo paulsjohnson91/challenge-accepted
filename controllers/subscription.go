@@ -133,7 +133,7 @@ func GetSubscriptionByCID(s *db.Dispatch) http.HandlerFunc {
 
 		oid := bson.ObjectIdHex(id)
 		u := model.Subscription{}
-		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid,"iscomplete": false}).One(&u); err != nil {
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&u); err != nil {
 			log.Info(err)
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -172,7 +172,7 @@ func GetSubscriptions(s *db.Dispatch) http.HandlerFunc {
 
 		u := []model.Subscription{}
 		log.Info("[getSubscriptions] search by user " + claims.UserID)
-		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID),"iscomplete": false}).All(&u); err != nil {
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID)}).All(&u); err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -261,14 +261,18 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&isSubscription); err != nil {
 			log.Info("No subscription found for challenge " + id + " creating new one")
 		} else {
-			if(isSubscription.IsComplete != true){
-				w.WriteHeader(http.StatusConflict)
-				uj, _ := json.Marshal(isSubscription)
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusCreated)
-				fmt.Fprintf(w, "%s", uj)
-				return
+			if(isSubscription.IsComplete == true){
+				isSubscription.IsComplete = false
+				for _, element := range isSubscription.ItemsProgress {
+					element.Complete = false
+				}
 			}
+			w.WriteHeader(http.StatusConflict)
+			uj, _ := json.Marshal(isSubscription)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprintf(w, "%s", uj)
+			return
 		}
 
 		c := model.BasicChallenge{}
@@ -374,6 +378,8 @@ func UpdateItem(s *db.Dispatch) http.HandlerFunc {
 		u.Progress = itemsComplete * 100 / items
 		if u.Progress == 100 {
 			u.IsComplete = true
+			u.TimesCompleted = u.TimesCompleted + 1
+			u.LastCompleted = time.Now()
 		}
 		c := ss.DB("gorest").C("subscriptions")
 
