@@ -228,6 +228,21 @@ func CreateSubscription(s *db.Dispatch) http.HandlerFunc {
 		}
 
 		oid := bson.ObjectIdHex(id)
+
+		isSubscription := model.Subscription{}
+		if err := ss.DB("gorest").C("subscriptions").Find(bson.M{"userid": bson.ObjectIdHex(claims.UserID), "challengeid": oid}).One(&isSubscription); err != nil {
+			log.Info("No subscription found for challenge " + id + " creating new one")
+		} else {
+			if(isSubscription.IsComplete != true){
+				w.WriteHeader(http.StatusConflict)
+				uj, _ := json.Marshal(isSubscription)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusCreated)
+				fmt.Fprintf(w, "%s", uj)
+				return
+			}
+		}
+
 		c := model.BasicChallenge{}
 		if err := ss.DB("gorest").C("challenges").FindId(oid).One(&c); err != nil {
 			w.WriteHeader(http.StatusNotFound)
