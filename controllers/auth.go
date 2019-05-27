@@ -53,9 +53,8 @@ func Auth(s *db.Dispatch) http.HandlerFunc {
 			fmt.Fprintf(w, `{"message": %q}`, err)
 			return
 		}
-		log.Info(t)
 		//write json
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{"token":%q, "expire":%s, "firstname":"%s", "lastname":"%s", "admin":"%t", "userid":"%s"}`, t.Token, t.Expire, t.FirstName, t.LastName, t.Admin, t.UserID)
+		fmt.Fprintf(w, `{"token":%q, "expire":%s, "firstname":"%s", "lastname":"%s", "admin":"%t", "userid":"%s", "completed":"%d"}`, t.Token, t.Expire, t.FirstName, t.LastName, t.Admin, t.UserID,t.Completed)
 	}
 }

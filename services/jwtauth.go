@@ -39,6 +39,7 @@ func GenerateToken(s *db.Dispatch, user model.User) (model.TokenEndExpire, error
 		u.Admin,
 		u.FirstName,
 		u.LastName,
+		u.Completed,
 		jwt.StandardClaims{
 			ExpiresAt: expir,
 			Issuer:    "localhost:3333",
@@ -58,6 +59,7 @@ func GenerateToken(s *db.Dispatch, user model.User) (model.TokenEndExpire, error
 	te.FirstName = u.FirstName
 	te.LastName = u.LastName
 	te.UserID = u.ID.Hex()
+	te.Completed = u.Completed
 
 	return te, nil
 }

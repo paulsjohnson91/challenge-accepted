@@ -6,9 +6,9 @@ import jwt "github.com/dgrijalva/jwt-go"
 type Claims struct {
 	UserID string `json:"user_id"`
 	Admin  bool   `json:"admin"`
-	FirstName string `json:"firstname`
-	LastName string `json:"lastname`
-
+	FirstName string `json:"firstname"`
+	LastName string `json:"lastname"`
+	Completed int `json:"completed"`
 	// recommended having
 	jwt.StandardClaims
 }
@@ -21,6 +21,7 @@ type TokenEndExpire struct {
 	Admin  bool
 	FirstName string
 	LastName string
+	Completed int
 }
 
 // Key model for JWT authorization
